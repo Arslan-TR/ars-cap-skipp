@@ -70,7 +70,7 @@ def main():
             subprocess.run(
                 [CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=1",
                  f"--user-data-dir={tmp}/profile", f"--window-size={w},{h + 120}", "--virtual-time-budget=4000",
-                 f"--screenshot={png}", f"http://127.0.0.1:{port}/docs/store/src/slide.html?{query}&h={h}"],
+                 f"--screenshot={png}", f"http://127.0.0.1:{port}/docs/store/src/slide.html?{query}&h={h}&w={w}"],
                 check=True, capture_output=True, timeout=120)
             im = Image.open(png).convert("RGB").crop((0, 0, w, h))  # RGB: no alpha channel
             im.save(OUT / name, "JPEG", quality=92, subsampling=0)

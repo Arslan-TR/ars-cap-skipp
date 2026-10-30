@@ -1,63 +1,163 @@
 # ARS-SKIPP — Free AI ReCaptcha Solver
 
+**English** | [Türkçe](README.tr.md)
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Manifest V3](https://img.shields.io/badge/Chrome-Manifest%20V3-1d4ed8)
+![Chrome 111+](https://img.shields.io/badge/Chrome-111%2B-3b82f6)
+
 GitHub: https://github.com/Arslan-TR/ars-cap-skipp
 
-A browser extension that automatically solves reCAPTCHA image challenges using a built-in ONNX neural network. Completely free — no API key or registration required.
+A Chrome extension that automatically solves reCAPTCHA image challenges using built-in ONNX neural networks that run on your own CPU, inside the browser. Free — no API key or registration is needed for the base extension.
+
+## Table of contents
+
+- [Features](#features)
+- [Supported challenges](#supported-challenges)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Configuration](#configuration)
+- [How it works](#how-it-works)
+- [Project structure](#project-structure)
+- [Data collection and privacy](#data-collection-and-privacy)
+- [WS addon](#ws-addon)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
 ## Features
 
-- Solves 3×3 and 4×4 reCAPTCHA image challenges locally using on-device AI models
-- Auto-opens the reCAPTCHA checkbox and starts solving without user interaction
-- Configurable solve delay (default 2 s) to avoid triggering bot detection
-- Perceptual hash cache — a bundled SQLite database of known image hashes with verified answers is checked before running inference, improving both speed and accuracy
+- Solves reCAPTCHA v2 image challenges (3×3 and 4×4 grids) locally with on-device AI models.
+- Opens the reCAPTCHA checkbox automatically and starts solving without user interaction.
+- Perceptual-hash cache: a bundled SQLite database (`extension/db/captcha.sqlite`) of known image hashes with verified answers is checked before running inference, which improves both speed and accuracy.
+- Configurable delays with random jitter so clicks do not happen at fixed intervals.
+- Per-site disable list.
+- Blue dark popup UI, translated into 11 languages (ar, de, en, es, fr, id, ja, ms, pt, ru, zh).
+- Runs only on `*.google.com/recaptcha/*` and `*.recaptcha.net/recaptcha/*` frames.
+
+## Supported challenges
+
+The multi-class grid model (`models/grid.onnx`) recognises these object types:
+
+`bicycles`, `buses`, `chimney`, `crosswalks`, `hydrants`, `motorcycles`, `parking meters`, `stairs`, `taxis`, `tractors`, `traffic lights`
+
+A dedicated `motorcycles_b1` model is bundled for the motorcycle 4×4 case. `models/type.onnx` handles tile-by-tile classification for 3×3 challenges.
+
+## Requirements
+
+- Google Chrome 111 or newer (or another Chromium browser with Manifest V3 support).
+- About 110 MB of disk space (models and WASM runtimes are bundled).
+- On first start the extension can pause for 5–15 seconds while the models load.
 
 ## Installation
 
 ### Base extension (Chrome 111+)
 
-1. Open `chrome://extensions`
-2. Enable **Developer mode** (top-right toggle)
-3. Click **Load unpacked**
-4. Select the `extension/` folder
+1. Clone or download this repository:
+   ```bash
+   git clone https://github.com/Arslan-TR/ars-cap-skipp.git
+   ```
+2. Open `chrome://extensions`.
+3. Enable **Developer mode** (top-right toggle).
+4. Click **Load unpacked**.
+5. Select the `extension/` folder.
+6. Restart the browser if the solver does not react after installation.
 
-### WS addon (Chrome 116+)
+### WS addon (Chrome 116+, optional)
 
-The WS addon enables WebSocket-based remote control for automated pipelines. It is installed on top of the base extension.
+The WS addon adds WebSocket-based remote control for automated pipelines. It is installed on top of the base extension. See [`ws-addon/README.md`](ws-addon/README.md).
 
-See [`ws-addon/README.md`](ws-addon/README.md) for installation instructions.
+## Usage
+
+1. Open any page that shows a reCAPTCHA.
+2. With the defaults the extension clicks the checkbox and solves the image challenge by itself.
+3. Click the extension icon to turn individual features on or off:
+
+| Popup switch | What it does |
+|--------------|--------------|
+| Solver enabled | Master on/off switch |
+| reCAPTCHA support | Enables handling of reCAPTCHA frames |
+| Auto-click buttons | Clicks the checkbox and the Verify button automatically |
+| Solve image challenges | Runs the AI models on image challenges |
+| WS mode | Remote-control mode (only visible with the WS addon and a 32-character key) |
+
+The popup also has **Timeouts** and **Reports** pages and a link to this repository.
 
 ## Configuration
 
-Click the extension icon to open the popup. Available settings:
+Open the **Timeouts** page in the popup:
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| Enabled | On | Master on/off switch |
-| Auto-open | On | Automatically click the reCAPTCHA checkbox |
-| Auto-solve | On | Automatically solve the image challenge |
 | Between tile clicks | 300 ms | Pause between clicking individual tiles (3×3 only) |
 | Dynamic reveal → click | 850 ms | Pause from a new dynamic tile image appearing to clicking it (counts recognition time already spent) |
 | Last click → verify | 850 ms | Pause between the final tile click and pressing Verify |
 | Disabled sites | — | Hostnames where the extension is inactive |
 
-A random 0–300 ms jitter is added to each timeout above every time it fires. Tiles in a 3×3 challenge are clicked in a randomized order.
+A random 0–300 ms jitter is added to each timeout every time it fires. Tiles in a 3×3 challenge are clicked in randomized order.
 
-## How It Works
+## How it works
 
-1. Content scripts injected into reCAPTCHA frames intercept the challenge UI.
-2. Each challenge image is perceptually hashed and looked up in the bundled SQLite cache (`db/captcha.sqlite`). Cache hits return the verified answer without running inference.
-3. On a cache miss, the images are passed to two ONNX models running entirely in the browser: `models/type.onnx` determines whether each tile contains the target object (3×3 challenges); `models/grid.onnx` scores each tile position for the correct selection (4×4 challenges).
-4. Matching tiles are clicked via the MAIN-world content script that wraps the page's `addEventListener`.
-5. All encountered images and their answers are saved to IndexedDB and periodically uploaded to `captcharaptor.com` to expand the training dataset for future model improvements.
+1. A MAIN-world content script (`eventhook/loader.js`) wraps the page's `addEventListener` so synthetic interaction is accepted; a second content script (`eventhook.js`, `captcha/recaptcha.js`) reads the challenge UI inside reCAPTCHA frames.
+2. Each challenge image is perceptually hashed (`captcha/phash-browser.js`) and looked up in the bundled SQLite cache via `sql.js`. A cache hit returns the verified answer without running inference.
+3. On a cache miss the images are passed to ONNX models running in the browser through `onnxruntime-web` (WASM, CPU): `models/type.onnx` decides whether each tile contains the target object (3×3); `models/grid.onnx` scores each tile position (4×4).
+4. The matching tiles are clicked, then Verify is pressed after the configured delay.
+5. Encountered images and their answers are stored in IndexedDB and periodically uploaded to a remote server (see below).
 
-## Data Collection
+## Project structure
 
-The extension collects anonymized captcha solve data (challenge images, selected tiles, solve outcome) and periodically uploads it to `captcharaptor.com`. This data is used to improve the AI models.
+```
+ARS-SKIPP/
+├── extension/                 Base Manifest V3 extension (load this folder)
+│   ├── manifest.json
+│   ├── background.js          Service worker, storage, report bookkeeping
+│   ├── background_sqlite.js   SQLite cache access
+│   ├── uploader.js            Dataset uploader (reports)
+│   ├── captcha/               Challenge detection, pHash, AI inference
+│   ├── eventhook/, eventhook.js  Event hooks for reCAPTCHA frames
+│   ├── lib/                   sql.js (SQLite in WASM)
+│   ├── libs/onnxruntime-web/  ONNX Runtime Web
+│   ├── models/                grid.onnx, type.onnx, motorcycles_b1.onnx (+ meta)
+│   ├── db/captcha.sqlite      Known image hashes with verified answers
+│   ├── popup.html/css/js      Popup UI
+│   ├── reports.html/js        Reports page
+│   ├── ws/background_ws.js    WS stub (replaced by the addon)
+│   ├── _locales/              11 UI translations
+│   └── icon/                  Blue extension icons
+├── ws-addon/                  Optional WebSocket remote-control overlay
+├── LICENSE
+├── README.md                  This file (English)
+└── README.tr.md               Turkish version
+```
 
-- A random 16-character reporting key is generated per browser profile and stored locally. It is not linked to any account.
-- Uploads can be disabled in the **Reports** section of the extension popup.
-- No personally identifiable information is collected.
+## Data collection and privacy
+
+Please read this before installing.
+
+- **Reports are enabled by default.** The extension stores challenge images, selected tiles and the solve outcome in IndexedDB and periodically uploads them to `captcharaptor.com` (the original upstream project's server) to grow its training dataset.
+- A random 16-character reporting key is generated per browser profile and stored locally. It is not tied to an account. The key is sent to the server as part of the upload request.
+- You can turn this off: open the popup → **Reports** → disable **Enable reports**.
+- The popup text "Models run locally" is accurate for inference — the solving itself happens on your machine — but it does not cover the dataset upload described above.
+- Anything that visits a reCAPTCHA page may be part of an upload, so avoid using the extension on pages whose content you consider private unless reports are disabled.
+
+## WS addon
+
+`ws-addon/` overlays the base extension with a WebSocket client so the extension can act as a personal captcha-solving worker for tasks in 2captcha / AntiCaptcha format. It requires Chrome 116+, extra permissions (`tabs`, `debugger`, `offscreen`, all URLs) and an API key from the upstream CaptchaPlugin service. Details: [`ws-addon/README.md`](ws-addon/README.md).
+
+> The addon connects to `wss://ws.captcharaptor.com` and ships a shared client token in `ws-addon/ws/offscreen.js`. That token belongs to the upstream service, not to this repository — treat the addon as third-party remote-control code and install it only if you understand that.
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| Nothing happens after install | Restart the browser; check `chrome://extensions` for errors on the service worker |
+| First solve is slow | Models are loading (5–15 s). Later solves are faster |
+| reCAPTCHA is not in English | The extension forces English because the models only understand English labels |
+| Does not run on a site | Check the **Disabled sites** list and that the switches in the popup are on |
+| Memory use is high | The three ONNX models are large; close other heavy tabs |
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE). The original copyright notice (Raptor) is kept as the license requires.
+
+Repository: https://github.com/Arslan-TR/ars-cap-skipp

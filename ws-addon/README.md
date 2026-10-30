@@ -1,5 +1,7 @@
 # WS Addon — Remote Control Mode
 
+**English** | [Türkçe](README.tr.md)
+
 GitHub: https://github.com/Arslan-TR/ars-cap-skipp
 
 This addon enables WebSocket-based remote control of the captcha solver. It is designed to be overlaid on top of the base extension from the `extension/` folder.

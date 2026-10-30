@@ -1,10 +1,10 @@
-# Store form — ARS-SKIPP: AI Captcha Image Solver v0.2.3600
+# Store form — ARS-SKIPP: AI Captcha Image Solver v0.26.71
 
 Everything below is final text to paste into the Chrome Web Store developer dashboard.
 
 ## Audit
 
-- Manifest: MV3. Name 34 chars (max 75). Summary 113 chars (max 132). Version `0.2.3600`. Icons 16/32/48/128 present.
+- Manifest: MV3. Name 34 chars (max 75). Summary 113 chars (max 132). Version `0.26.71`. Icons 16/32/48/128 present.
 - Permissions: `storage`, `alarms`, `idle`, `declarativeNetRequest` — all used (see Privacy → justifications). Removed nothing; no unused permissions found.
 - Host permissions: `*://*.google.com/recaptcha/*` (used by content scripts and the background image fetch). Content scripts also match `*://*.recaptcha.net/recaptcha/*`.
 - Remote code: none. All JS, WASM, ONNX models and the SQLite database ship in the package; `importScripts` only loads packaged files.
@@ -102,5 +102,5 @@ No account or sign-in is needed.
 
 - Register the developer account (one-time US$5) and **verify the contact e-mail** under Account → Settings.
 - Keep the GitHub repository **public** so the privacy-policy link opens.
-- Build the package: `python scripts/build_zip.py`, then upload `dist/ars-skipp-v0.2.3600.zip` (manifest.json is at the zip root).
+- Build the package: `python scripts/build_zip.py`, then upload `dist/ars-skipp-v0.26.71.zip` (manifest.json is at the zip root).
 - Bump `version` in `extension/manifest.json` for every later upload.

@@ -1,6 +1,6 @@
 {
   "name": "ARS-SKIPP: AI Captcha Image Solver",
-  "version": "0.2.3600",
+  "version": "0.26.71",
   "homepage_url": "https://github.com/Arslan-TR/ars-cap-skipp",
   "description": "Solves image captcha challenges on your device with built-in neural networks. Free, no account or API key needed.",
   "default_locale": "en",
@@ -85,5 +85,5 @@
   "*://*.google.com/recaptcha/*"
 ],
   "minimum_chrome_version": "111",
-  "version_name": "0.2.3600"
+  "version_name": "0.26.71"
 }

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>store slide</title>
+<style>
+  :root { --navy:#07142e; --blue:#2563eb; --sky:#93c5fd; }
+  * { box-sizing: border-box; margin: 0; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body { background: radial-gradient(1200px 700px at 85% 10%, #3b82f6 0%, #1d4ed8 38%, #0a2a6e 100%); color: #fff; position: relative; }
+  .brand { position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 26px; letter-spacing: .3px; }
+  .brand img { width: 52px; height: 52px; }
+  .copy { position: absolute; left: 64px; top: 190px; width: 600px; }
+  .copy h1 { font-size: 58px; line-height: 1.08; font-weight: 800; letter-spacing: -.5px; }
+  .copy ul { list-style: none; padding: 0; margin-top: 34px; }
+  .copy li { font-size: 27px; line-height: 1.35; color: #dbeafe; padding-left: 38px; position: relative; margin-bottom: 14px; }
+  .copy li::before { content: ""; position: absolute; left: 0; top: 11px; width: 20px; height: 20px; border-radius: 50%; background: var(--sky); box-shadow: 0 0 0 5px rgba(147,197,253,.25); }
+  .phone { position: absolute; width: 300px; transform-origin: top left; }
+  .phone iframe { width: 300px; border: 0; border-radius: 14px; background: var(--navy); box-shadow: 0 30px 70px rgba(2,10,40,.55), 0 0 0 1px rgba(255,255,255,.12); display: block; }
+  .steps { position: absolute; left: 64px; right: 64px; top: 250px; display: flex; gap: 34px; align-items: stretch; }
+  .step { flex: 1; background: rgba(7,20,46,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 22px; padding: 34px 30px; }
+  .step .n { width: 56px; height: 56px; border-radius: 50%; background: var(--blue); display: grid; place-items: center; font-size: 28px; font-weight: 800; margin-bottom: 22px; box-shadow: 0 0 0 6px rgba(147,197,253,.25); }
+  .step h3 { font-size: 31px; margin-bottom: 12px; }
+  .step p { font-size: 23px; line-height: 1.4; color: #dbeafe; }
+  .foot { position: absolute; left: 64px; right: 64px; bottom: 56px; font-size: 25px; color: #bfdbfe; }
+  .center-title { position: absolute; left: 64px; top: 130px; font-size: 54px; font-weight: 800; letter-spacing: -.5px; }
+  .promo { position: absolute; inset: 0; display: flex; align-items: center; gap: 20px; padding: 0 28px; }
+  .promo img { width: 104px; height: 104px; flex: none; filter: drop-shadow(0 10px 20px rgba(2,10,40,.45)); }
+  .promo h2 { font-size: 36px; line-height: 1.05; font-weight: 800; letter-spacing: -.3px; }
+  .promo p { font-size: 19px; line-height: 1.3; color: #dbeafe; margin-top: 10px; }
+  .marq { gap: 50px; padding-left: 80px; }
+  .marq img:first-child { width: 200px; height: 200px; }
+  .marq h2 { font-size: 72px; }
+  .marq p { font-size: 30px; margin-top: 16px; max-width: 600px; }
+</style>
+</head>
+<body>
+<script>
+  const q = new URLSearchParams(location.search);
+  const n = q.get('n');
+  // the capture window is taller than the image; pin the layout to the image height
+  document.documentElement.style.height = document.body.style.height = (q.get('h') || 800) + 'px';
+  const brand = '<div class="brand"><img src="icon128.png" alt="">ARS-SKIPP</div>';
+  const shot = (view, h, scale, left, top) =>
+    `<div class="phone" style="transform:scale(${scale});left:${left}px;top:${top}px"><iframe src="/extension/popup.html#${view}" style="height:${h}px"></iframe></div>`;
+  const captcha = (left, top, scale) =>
+    `<img src="captcha-demo.png" alt="" style="position:absolute;left:${left}px;top:${top}px;width:${402 * scale}px;border-radius:6px;box-shadow:0 30px 70px rgba(2,10,40,.55),0 0 0 1px rgba(255,255,255,.2)">`;
+  const side = (view) => shot(view, 392, 1.7, 1280 - 90 - 300 * 1.7, (800 - 392 * 1.7) / 2);
+  const slides = {
+    '1': brand + '<div class="copy"><h1>Solves image captchas on your device</h1><ul><li>Picks the matching tiles for you</li><li>Presses Verify automatically</li><li>Free: no account, no API key</li></ul></div>'
+      + captcha(650, 90, 1.0) + shot('main', 392, 0.85, 1015, 430),
+    '2': brand + '<div class="copy"><h1>Simple controls</h1><ul><li>Master switch for the solver</li><li>Auto-click and image-solving toggles</li><li>Nothing to configure to get started</li></ul></div>' + side('main'),
+    '3': brand + '<div class="copy"><h1>Tune every delay</h1><ul><li>Pause between tile clicks</li><li>Dynamic-tile reveal and verify timing</li><li>Random jitter added to each timeout</li></ul></div>' + side('timeouts'),
+    '4': brand + '<div class="copy"><h1>Private by default</h1><ul><li>Reports are off until you turn them on</li><li>Solving never needs a server</li><li>Turn reports on or off any time</li></ul></div>' + side('reports'),
+    '5': brand + '<div class="center-title">How it works</div><div class="steps">'
+      + '<div class="step"><div class="n">1</div><h3>Hash lookup</h3><p>Each challenge image is hashed and checked against a bundled database of known answers.</p></div>'
+      + '<div class="step"><div class="n">2</div><h3>On-device AI</h3><p>Unknown images go to ONNX neural networks running locally in your browser on the CPU.</p></div>'
+      + '<div class="step"><div class="n">3</div><h3>Click and verify</h3><p>Matching tiles are clicked with configurable, slightly randomized delays, then Verify.</p></div></div>'
+      + '<div class="foot">Solving runs entirely in your browser. Nothing is uploaded unless you enable Reports.</div>',
+    'promo': '<div class="promo"><img src="icon128.png" alt=""><div><h2>ARS-SKIPP</h2><p>AI captcha image solver that runs on your device</p></div></div>',
+    'marquee': '<div class="promo marq"><img src="icon128.png" alt=""><div><h2>ARS-SKIPP</h2><p>Free AI captcha image solver. Runs on your device, no account or API key.</p></div></div>'
+      + captcha(1040, 50, 0.8)
+  };
+  document.body.insertAdjacentHTML('beforeend', slides[n] || '');
+</script>
+</body>
+</html>

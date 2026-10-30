@@ -1,5 +1,5 @@
 {
-  "name": "Free AI ReCaptcha Solver by Raptor",
+  "name": "ARS-SKIPP: AI Captcha Image Solver (WS)",
   "version": "1.36.46.151",
   "homepage_url": "https://github.com/Arslan-TR/ars-cap-skipp",
   "description": "Automatically solves ReCaptcha images using a built-in neural network. Completely free. No registration or key purchase required.",
@@ -77,7 +77,7 @@
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
   "action": {
-    "default_title": "Captcha Plugin: ReCaptcha Solver by Raptor",
+    "default_title": "ARS-SKIPP",
     "default_icon": "icon/16.png",
     "default_popup": "popup.html"
   },

@@ -10,6 +10,11 @@
   body { background: radial-gradient(1200px 700px at 85% 10%, #3b82f6 0%, #1d4ed8 38%, #0a2a6e 100%); color: #fff; position: relative; }
   .brand { position: absolute; left: 64px; top: 52px; display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 26px; letter-spacing: .3px; }
   .brand img { width: 52px; height: 52px; }
+  .brand .x { font-weight: 400; color: #93c5fd; font-size: 30px; margin: 0 4px; }
+  .brand .partner { background: #fefefe; border-radius: 12px; padding: 3px 8px; display: flex; box-shadow: 0 6px 18px rgba(2,10,40,.35); }
+  .brand .partner img { width: auto; height: 52px; }
+  .corner { position: absolute; left: 80px; bottom: 36px; background: #fefefe; border-radius: 12px; padding: 4px 10px; display: flex; box-shadow: 0 6px 18px rgba(2,10,40,.35); }
+  .corner img { height: 56px; width: auto; }
   .copy { position: absolute; left: 64px; top: 190px; width: 600px; }
   .copy h1 { font-size: 58px; line-height: 1.08; font-weight: 800; letter-spacing: -.5px; }
   .copy ul { list-style: none; padding: 0; margin-top: 34px; }
@@ -40,7 +45,7 @@
   const n = q.get('n');
   // the capture window is taller than the image; pin the layout to the image height
   document.documentElement.style.height = document.body.style.height = (q.get('h') || 800) + 'px';
-  const brand = '<div class="brand"><img src="icon128.png" alt="">ARS-SKIPP</div>';
+  const brand = '<div class="brand"><img src="icon128.png" alt="">ARS-SKIPP<span class="x">&times;</span><span class="partner"><img src="itpro-logo.png" alt="IT PRO"></span></div>';
   const shot = (view, h, scale, left, top) =>
     `<div class="phone" style="transform:scale(${scale});left:${left}px;top:${top}px"><iframe src="/extension/popup.html#${view}" style="height:${h}px"></iframe></div>`;
   const captcha = (left, top, scale) =>
@@ -59,7 +64,7 @@
       + '<div class="foot">Solving runs entirely in your browser. Nothing is uploaded unless you enable Reports.</div>',
     'promo': '<div class="promo"><img src="icon128.png" alt=""><div><h2>ARS-SKIPP</h2><p>AI captcha image solver that runs on your device</p></div></div>',
     'marquee': '<div class="promo marq"><img src="icon128.png" alt=""><div><h2>ARS-SKIPP</h2><p>Free AI captcha image solver. Runs on your device, no account or API key.</p></div></div>'
-      + captcha(1040, 50, 0.8)
+      + captcha(1040, 50, 0.8) + '<div class="corner"><img src="itpro-logo.png" alt="IT PRO"></div>'
   };
   document.body.insertAdjacentHTML('beforeend', slides[n] || '');
 </script>

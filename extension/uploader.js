@@ -5,8 +5,9 @@
   const MIN_ROW_AGE_MS = 60_000;
 
 
+  // Reports upload challenge images to a remote server, so they are opt-in.
   const DEFAULT_REPORTING = {
-    enabled: true,
+    enabled: false,
     key: '',
     client_id: '',
     schedule_minutes: 60,

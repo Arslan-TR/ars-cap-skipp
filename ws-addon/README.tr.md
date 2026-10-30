@@ -22,6 +22,16 @@ Görevler standart 2captcha veya AntiCaptcha API biçiminde gönderilir. API aç
 2. https://captchaplugin.com/keys.php sayfasından bir anahtar üretin
 3. Anahtarı eklenti açılır penceresine (Reports sekmesi) yapıştırın, ardından WS mode'u açın
 
+## Sunucu kimlik doğrulama anahtarı
+
+Eklenti artık koda gömülü bir sunucu anahtarı taşımaz. WS mode'u açmadan önce hizmetin size verdiği anahtarı `chrome.storage.local` içine kaydedin. `chrome://extensions` → bu eklenti → **service worker** (DevTools konsolu) açıp şunu çalıştırın:
+
+```js
+chrome.storage.local.set({ ws_auth_token: 'ANAHTARINIZ' })
+```
+
+Anahtar yoksa eklenti hata yazar ve bağlanmaz. Anahtarı arka plan betiğinden yalnızca eklentinin kendi sayfaları okuyabilir.
+
 ## Kurulum
 
 1. `extension/` klasörünü `chrome://extensions` içinden paketlenmemiş eklenti olarak yükleyin.
@@ -50,5 +60,5 @@ WS modu açıldığında arka plan betiği, CaptchaPlugin sunucusuyla kalıcı b
 
 ## Güvenlik notu
 
-- Eklenti `wss://ws.captcharaptor.com` adresine bağlanır; `ws/offscreen.js` içinde üst proje hizmetine ait ortak bir istemci anahtarı bulunur. Bu bir sır olarak değerlendirilmemelidir ve bu depoya ait değildir.
+- Eklenti `wss://ws.captcharaptor.com` adresine bağlanır. Sunucu anahtarı kodda tutulmaz, `chrome.storage.local` içinden okunur.
 - Ek izinler (`debugger`, `tabs`, `<all_urls>`) çok geniştir. Yalnızca güvendiğiniz bir tarayıcı profilinde kurun.

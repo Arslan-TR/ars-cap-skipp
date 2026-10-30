@@ -134,17 +134,17 @@ ARS-SKIPP/
 
 Kurmadan önce lütfen okuyun.
 
-- **Raporlar varsayılan olarak açıktır.** Eklenti, doğrulama görsellerini, seçilen kareleri ve çözüm sonucunu IndexedDB'de tutar ve eğitim veri setini büyütmek için periyodik olarak `captcharaptor.com` adresine (özgün üst proje sunucusu) yükler.
-- Her tarayıcı profili için rastgele 16 karakterlik bir rapor anahtarı üretilir ve yerelde saklanır. Bir hesaba bağlı değildir. Anahtar, yükleme isteğiyle sunucuya gönderilir.
-- Kapatabilirsiniz: açılır pencere → **Reports** → **Enable reports** seçeneğini kapatın.
-- Açılır penceredeki "Models run locally" ifadesi çıkarım için doğrudur — çözme işlemi sizin makinenizde olur — ancak yukarıda anlatılan veri seti yüklemesini kapsamaz.
-- Bir reCAPTCHA sayfasını ziyaret etmeniz yüklemeye konu olabilir; raporlar kapalı değilse içeriği gizli saydığınız sayfalarda eklentiyi kullanmayın.
+- **Raporlar varsayılan olarak kapalıdır (isteğe bağlı).** Çözme işlemi tamamen sizin makinenizde olur ve hiçbir şey yüklenmez.
+- Raporları açarsanız (açılır pencere → **Reports** → **Enable reports**), eklenti IndexedDB'de tuttuğu doğrulama görsellerini, seçilen kareleri ve çözüm sonucunu, eğitim veri setini büyütmek için periyodik olarak `captcharaptor.com` adresine (özgün üst proje sunucusu) yükler.
+- Her tarayıcı profili için rastgele bir rapor anahtarı üretilir ve yerelde saklanır. Bir hesaba bağlı değildir. Raporlar açıkken anahtar, her yüklemede sunucuya gönderilir (`X-Auth-Key` başlığı ve istek adresi içinde).
+- Açılır pencere metni bunu belirtir: modeller yerelde çalışır ve Reports açılmadıkça hiçbir şey yüklenmez.
+- Raporlar açıkken çözdüğünüz reCAPTCHA içeren sayfalar yüklemeye konu olabilir; içeriği gizli saydığınız sayfalarda eklentiyi kullanmayın.
 
 ## WS eklentisi
 
 `ws-addon/`, temel eklentinin üzerine bir WebSocket istemcisi ekler; böylece eklenti, 2captcha / AntiCaptcha biçimindeki görevler için kişisel bir çözüm işçisi gibi çalışabilir. Chrome 116+, ek izinler (`tabs`, `debugger`, `offscreen`, tüm URL'ler) ve üst projedeki CaptchaPlugin hizmetinden bir API anahtarı gerektirir. Ayrıntılar: [`ws-addon/README.tr.md`](ws-addon/README.tr.md).
 
-> Eklenti `wss://ws.captcharaptor.com` adresine bağlanır ve `ws-addon/ws/offscreen.js` içinde ortak bir istemci anahtarı taşır. Bu anahtar bu depoya değil, üst proje hizmetine aittir — eklentiyi üçüncü taraf uzaktan kontrol kodu olarak değerlendirin ve yalnızca ne yaptığını anlıyorsanız kurun.
+> Eklenti `wss://ws.captcharaptor.com` adresine bağlanır. Sunucu istemci anahtarı artık kodun içine gömülü değildir: kendi anahtarınızı `chrome.storage.local` içinde `ws_auth_token` adıyla saklamanız gerekir (bkz. [`ws-addon/README.tr.md`](ws-addon/README.tr.md)). Anahtar yoksa eklenti bağlanmaz. Eklentiyi üçüncü taraf uzaktan kontrol kodu olarak değerlendirin ve yalnızca ne yaptığını anlıyorsanız kurun.
 
 ## Sorun giderme
 

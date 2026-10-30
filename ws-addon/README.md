@@ -22,6 +22,16 @@ Tasks are submitted using the standard 2captcha or AntiCaptcha API format. Full 
 2. Go to https://captchaplugin.com/keys.php and generate a key
 3. Paste the key into the extension popup (Reports tab), then enable WS mode
 
+## Server auth token
+
+The addon no longer ships a hard-coded server token. Store the token you were given by the service in `chrome.storage.local` before enabling WS mode. Open `chrome://extensions` → this extension → **service worker** (DevTools console) and run:
+
+```js
+chrome.storage.local.set({ ws_auth_token: 'YOUR_TOKEN' })
+```
+
+Without the token the addon logs an error and does not connect. Only the extension's own pages can read it from the background script.
+
 ## Installation
 
 1. Load the base extension from `extension/` as an unpacked extension in `chrome://extensions`.

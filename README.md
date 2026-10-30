@@ -134,17 +134,17 @@ ARS-SKIPP/
 
 Please read this before installing.
 
-- **Reports are enabled by default.** The extension stores challenge images, selected tiles and the solve outcome in IndexedDB and periodically uploads them to `captcharaptor.com` (the original upstream project's server) to grow its training dataset.
-- A random 16-character reporting key is generated per browser profile and stored locally. It is not tied to an account. The key is sent to the server as part of the upload request.
-- You can turn this off: open the popup → **Reports** → disable **Enable reports**.
-- The popup text "Models run locally" is accurate for inference — the solving itself happens on your machine — but it does not cover the dataset upload described above.
-- Anything that visits a reCAPTCHA page may be part of an upload, so avoid using the extension on pages whose content you consider private unless reports are disabled.
+- **Reports are off by default (opt-in).** Solving runs entirely on your machine and nothing is uploaded.
+- If you turn reports on (popup → **Reports** → **Enable reports**), the extension uploads challenge images, selected tiles and the solve outcome, stored in IndexedDB, periodically to `captcharaptor.com` (the original upstream project's server) to grow its training dataset.
+- A random reporting key is generated per browser profile and stored locally. It is not tied to an account. When reports are on, the key is sent to the server with each upload (as an `X-Auth-Key` header and in the request URL).
+- The popup text states this: it says models run locally and that nothing is uploaded unless Reports is enabled.
+- While reports are on, pages with reCAPTCHA you solve may be part of an upload, so avoid using the extension on pages whose content you consider private.
 
 ## WS addon
 
 `ws-addon/` overlays the base extension with a WebSocket client so the extension can act as a personal captcha-solving worker for tasks in 2captcha / AntiCaptcha format. It requires Chrome 116+, extra permissions (`tabs`, `debugger`, `offscreen`, all URLs) and an API key from the upstream CaptchaPlugin service. Details: [`ws-addon/README.md`](ws-addon/README.md).
 
-> The addon connects to `wss://ws.captcharaptor.com` and ships a shared client token in `ws-addon/ws/offscreen.js`. That token belongs to the upstream service, not to this repository — treat the addon as third-party remote-control code and install it only if you understand that.
+> The addon connects to `wss://ws.captcharaptor.com`. The server's client token is no longer hard-coded: you must store your own in `chrome.storage.local` under `ws_auth_token` (see [`ws-addon/README.md`](ws-addon/README.md)). Without it the addon does not connect. Treat the addon as third-party remote-control code and install it only if you understand that.
 
 ## Troubleshooting
 

@@ -33,6 +33,11 @@ self.WS_MODE_AVAILABLE = true;
     return key.length === 32 ? key : null;
   }
 
+  async function getWsToken() {
+    const { ws_auth_token } = await chrome.storage.local.get('ws_auth_token');
+    return typeof ws_auth_token === 'string' ? ws_auth_token.trim() : '';
+  }
+
   async function loadWsTabId() {
     const d = await chrome.storage.local.get(WS_TAB_KEY);
     return Number.isInteger(d[WS_TAB_KEY]) ? d[WS_TAB_KEY] : null;
@@ -494,7 +499,7 @@ self.WS_MODE_AVAILABLE = true;
   // ---- Message handler ----
   const WS_MSG_TYPES = new Set([
     'open', 'clear', 'recaptcha_solved', 'recaptcha_error', 'recaptcha_activity',
-    'force_show_welldone', 'get_api_key', 'get_enabled', 'set_enabled', 'ws_available',
+    'force_show_welldone', 'get_api_key', 'get_ws_token', 'get_enabled', 'set_enabled', 'ws_available',
   ]);
 
   chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
@@ -511,6 +516,13 @@ self.WS_MODE_AVAILABLE = true;
 
         if (msg.type === 'get_api_key') {
           sendResponse({ type: 'ok', apiKey: await getApiKey() });
+          return;
+        }
+
+        if (msg.type === 'get_ws_token') {
+          // Only the extension's own pages (the offscreen document) may read the token.
+          const own = typeof sender?.url === 'string' && sender.url.startsWith(chrome.runtime.getURL(''));
+          sendResponse(own ? { type: 'ok', token: await getWsToken() } : { type: 'error', error: 'forbidden' });
           return;
         }
 

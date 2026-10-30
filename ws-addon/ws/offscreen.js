@@ -2,7 +2,9 @@
 // Runs in an offscreen document (persistent across SW restarts).
 
 const WS_URL        = 'wss://ws.captcharaptor.com';
-const AUTH_TOKEN    = 'CSGOSECRET1111!!WOWRAPTOR';
+// The server auth token is not stored in the source. It is read from
+// chrome.storage.local ('ws_auth_token') through the background script.
+let authToken       = '';
 
 const HEARTBEAT_MS           = 25000;
 const RECONNECT_MS           = 1500;
@@ -146,6 +148,15 @@ async function fetchApiKeyFromBackground() {
   });
 }
 
+async function fetchAuthTokenFromBackground() {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({ type: 'get_ws_token' }, (resp) => {
+      if (chrome.runtime.lastError || !resp || resp.type !== 'ok') return resolve('');
+      resolve(typeof resp.token === 'string' ? resp.token : '');
+    });
+  });
+}
+
 // ---- Connection ----
 function startHeartbeat() {
   stopHeartbeat();
@@ -179,11 +190,16 @@ function disconnect() {
 async function connect() {
   try {
     if (apiKey == null) apiKey = await fetchApiKeyFromBackground();
+    if (!authToken) authToken = await fetchAuthTokenFromBackground();
+    if (!authToken) {
+      console.error("[offscreen] no server auth token set; set 'ws_auth_token' in chrome.storage.local (see ws-addon/README.md)");
+      return;
+    }
 
     ws = new WebSocket(WS_URL);
 
     ws.onopen = () => {
-      safeJsonSend({ type: 'hello', token: AUTH_TOKEN, id: crypto.randomUUID(), apiKey, v: 1 });
+      safeJsonSend({ type: 'hello', token: authToken, id: crypto.randomUUID(), apiKey, v: 1 });
       startHeartbeat();
       safeJsonSend({ type: 'status', state: busy ? 'busy' : 'free' });
     };

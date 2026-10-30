@@ -12,6 +12,7 @@ reCAPTCHA görsel doğrulamalarını, tarayıcının içinde ve kendi işlemcini
 
 ## İçindekiler
 
+- [Ekran görüntüleri](#ekran-görüntüleri)
 - [Özellikler](#özellikler)
 - [Desteklenen doğrulamalar](#desteklenen-doğrulamalar)
 - [Gereksinimler](#gereksinimler)
@@ -24,6 +25,20 @@ reCAPTCHA görsel doğrulamalarını, tarayıcının içinde ve kendi işlemcini
 - [WS eklentisi](#ws-eklentisi)
 - [Sorun giderme](#sorun-giderme)
 - [Lisans](#lisans)
+
+## Ekran görüntüleri
+
+<p align="center">
+  <img src="docs/store/screenshot-1.jpg" width="760" alt="ARS-SKIPP görsel doğrulamayı çözerken, açılır pencere açık">
+</p>
+
+| Açılır pencere | Zaman aşımları |
+|----------------|----------------|
+| <img src="docs/store/screenshot-2.jpg" alt="Çözücü anahtarlarının bulunduğu ana açılır pencere"> | <img src="docs/store/screenshot-3.jpg" alt="Gecikme ayarlarının bulunduğu Timeouts sayfası"> |
+
+| Raporlar (varsayılan kapalı) | Nasıl çalışır |
+|------------------------------|---------------|
+| <img src="docs/store/screenshot-4.jpg" alt="Varsayılan olarak kapalı Reports sayfası"> | <img src="docs/store/screenshot-5.jpg" alt="Çözücünün çalışma adımları: özet arama, cihaz üzerinde yapay zekâ, tıkla ve doğrula"> |
 
 ## Özellikler
 

@@ -12,6 +12,7 @@ A Chrome extension that automatically solves reCAPTCHA image challenges using bu
 
 ## Table of contents
 
+- [Screenshots](#screenshots)
 - [Features](#features)
 - [Supported challenges](#supported-challenges)
 - [Requirements](#requirements)
@@ -24,6 +25,20 @@ A Chrome extension that automatically solves reCAPTCHA image challenges using bu
 - [WS addon](#ws-addon)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/store/screenshot-1.jpg" width="760" alt="ARS-SKIPP solving an image challenge, with the popup open">
+</p>
+
+| Popup | Timeouts |
+|-------|----------|
+| <img src="docs/store/screenshot-2.jpg" alt="Main popup with the solver switches"> | <img src="docs/store/screenshot-3.jpg" alt="Timeouts page with delay settings"> |
+
+| Reports (off by default) | How it works |
+|--------------------------|--------------|
+| <img src="docs/store/screenshot-4.jpg" alt="Reports page, disabled by default"> | <img src="docs/store/screenshot-5.jpg" alt="How the solver works: hash lookup, on-device AI, click and verify"> |
 
 ## Features
 
